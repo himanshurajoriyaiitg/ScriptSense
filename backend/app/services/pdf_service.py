@@ -4,6 +4,8 @@ import uuid
 from app.models.file_model import UploadedFile
 from app.database.db import SessionLocal
 
+from app.services.ocr_service import extract_text_from_pdf
+
 UPLOAD_DIR = "uploads"
 
 async def save_uploaded_file(file):
@@ -21,11 +23,14 @@ async def save_uploaded_file(file):
         content = await file.read()
         buffer.write(content)
 
+    extracted_text = extract_text_from_pdf(file_path)
+
     db = SessionLocal()
 
     new_file = UploadedFile(
         filename=file.filename,
-        filepath=file_path
+        filepath=file_path,
+        extracted_text=extracted_text
     )
 
     db.add(new_file)
@@ -38,5 +43,6 @@ async def save_uploaded_file(file):
 
     return {
         "id": new_file.id,
-        "filepath": file_path
+        "filepath": file_path,
+        "text": extracted_text
     }
