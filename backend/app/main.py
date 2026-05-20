@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.routes.upload import router as upload_router
 from app.routes.grading import router as grading_router
+from app.routes.auth import router as auth_router
 
 from app.database.db import engine
 from app.models.file_model import UploadedFile
@@ -12,6 +13,7 @@ app = FastAPI()
 
 app.include_router(upload_router)
 app.include_router(grading_router)
+app.include_router(auth_router)
 
 @app.get("/")
 def home():
