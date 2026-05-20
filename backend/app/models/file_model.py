@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 from app.database.db import Base
 
 class UploadedFile(Base):
@@ -10,3 +10,5 @@ class UploadedFile(Base):
     filename = Column(String, nullable=False)
 
     filepath = Column(String, nullable=False)
+
+    extracted_text = Column(Text, nullable=True)
