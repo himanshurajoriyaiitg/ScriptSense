@@ -1,27 +1,46 @@
+from io import BytesIO
+from typing import Any
+
 import fitz
 import pytesseract
 from PIL import Image
 
-def extract_text_from_pdf(pdf_path):
 
-    doc = fitz.open(pdf_path)
+class OCRProcessingError(Exception):
+    pass
 
-    extracted_text = ""
 
-    for page_number in range(len(doc)):
+def extract_submission_content(pdf_path: str) -> dict[str, Any]:
+    extracted_pages: list[str] = []
 
-        page = doc.load_page(page_number)
+    try:
+        with fitz.open(pdf_path) as doc:
+            page_count = len(doc)
 
-        pix = page.get_pixmap()
+            for page_number in range(page_count):
+                page = doc.load_page(page_number)
+                pix = page.get_pixmap(dpi=220)
+                image = Image.open(BytesIO(pix.tobytes("png")))
+                text = pytesseract.image_to_string(image).strip()
 
-        image_path = f"page_images/page_{page_number}.png"
+                if text:
+                    extracted_pages.append(text)
+    except pytesseract.TesseractNotFoundError as exc:
+        raise OCRProcessingError(
+            "Tesseract is not installed or not available on this machine"
+        ) from exc
+    except Exception as exc:
+        raise OCRProcessingError(f"Failed to extract text from PDF: {exc}") from exc
 
-        pix.save(image_path)
+    extracted_text = "\n\n".join(extracted_pages).strip()
+    if not extracted_text:
+        raise OCRProcessingError("OCR completed but no text was extracted from the PDF")
 
-        image = Image.open(image_path)
+    return {
+        "text": extracted_text,
+        "page_count": page_count,
+    }
 
-        text = pytesseract.image_to_string(image)
 
-        extracted_text += text
-
-    return extracted_text
+def extract_text_from_pdf(pdf_path: str) -> str:
+    return extract_submission_content(pdf_path)["text"]
