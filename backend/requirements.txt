@@ -14,13 +14,13 @@ idna==3.15
 jiter==0.15.0
 openai==2.37.0
 packaging==26.2
-passlib==1.7.4
 pillow==12.2.0
 psycopg2-binary==2.9.12
 pyasn1==0.6.3
 pydantic==2.13.4
 pydantic_core==2.46.4
 PyMuPDF==1.27.2.3
+pytest==8.4.2
 pytesseract==0.3.13
 python-dotenv==1.2.2
 python-jose==3.5.0
