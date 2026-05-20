@@ -8,22 +8,26 @@ client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY")
 )
 
-def grade_answer(answer_text):
+def grade_answer(answer_text, rubric):
 
     prompt = f"""
-    You are an exam evaluator.
+You are an expert exam evaluator.
 
-    Evaluate this student answer.
+Evaluate the student answer STRICTLY according to the rubric.
 
-    Give:
-    1. Marks out of 10
-    2. Feedback
-    3. Mistakes
-    4. Final summary
+Rubric:
+{rubric}
 
-    Student Answer:
-    {answer_text}
-    """
+Student Answer:
+{answer_text}
+
+Give:
+1. Marks breakdown
+2. Total marks
+3. Feedback
+4. Missing points
+5. Final summary
+"""
 
     response = client.chat.completions.create(
         model="gpt-4.1-mini",

@@ -8,7 +8,12 @@ async def grade(data: dict):
 
     answer_text = data.get("answer")
 
-    result = grade_answer(answer_text)
+    rubric = data.get("rubric")
+
+    result = grade_answer(
+        answer_text,
+        rubric
+    )
 
     return {
         "grading_result": result
