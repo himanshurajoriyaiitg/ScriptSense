@@ -12,3 +12,5 @@ class UploadedFile(Base):
     filepath = Column(String, nullable=False)
 
     extracted_text = Column(Text, nullable=True)
+
+    grading_result = Column(Text, nullable=True)
