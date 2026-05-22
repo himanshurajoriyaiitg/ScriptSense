@@ -46,12 +46,27 @@ export default function UploadPage() {
 
     setUploading(true)
     try {
+      const rubricData = JSON.parse(form.rubric_json)
+      
+      // 1. Create the exam (JSON)
+      const examRes = await api.post('/exams/', {
+        title: form.title,
+        course_code: form.course,
+        rubric: rubricData
+      })
+      const examId = examRes.data.id
+
+      // 2. Upload submissions (FormData)
       const fd = new FormData()
-      fd.append('title', form.title)
-      fd.append('course', form.course)
-      fd.append('rubric_json', form.rubric_json)
+      const studentNames = files.map(f => f.name.replace('.pdf', ''))
+      const studentIds = files.map((_, i) => `STU${1000 + i}`)
+      
+      fd.append('student_names', JSON.stringify(studentNames))
+      fd.append('student_ids', JSON.stringify(studentIds))
       files.forEach((file) => fd.append('files', file))
-      await api.post('/exams', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+      
+      await api.post(`/exams/${examId}/submissions`, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+      
       navigate('/')
     } catch (err) {
       setError(getErrorMessage(err, 'Upload failed'))
