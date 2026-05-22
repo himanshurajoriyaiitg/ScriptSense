@@ -20,51 +20,95 @@ A Human-in-the-Loop (HITL) exam grading pipeline. Professors upload bulk handwri
 
 ## Local Setup
 
-### 1. Clone the repo
-```bash
-git clone <your-scriptsense-repo-url>
-cd ScriptSense
-```
+### Option 1: Docker (Recommended)
 
-### 2. Set up environment variables
-```bash
-cp .env.example .env
-```
+1. **Set up environment variables:**
+   Copy `.env.example` to `.env` and fill in `GROQ_API_KEY`.
+   ```bash
+   cp .env.example .env     # (macOS/Linux)
+   copy .env.example .env   # (Windows)
+   ```
 
-Fill in `.env`:
-```env
-DATABASE_URL=postgresql://scriptsense:scriptsense@localhost:5432/scriptsense
-SECRET_KEY=any-long-random-string-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=480
-GROQ_API_KEY=your-groq-key-here
-ENVIRONMENT=development
-```
+2. **Run the containers:**
+   ```bash
+   docker compose up -d --build
+   ```
 
-### 3. Set up PostgreSQL
-Create the database and user:
-```sql
-CREATE USER scriptsense WITH PASSWORD 'scriptsense';
-CREATE DATABASE scriptsense OWNER scriptsense;
-GRANT ALL ON SCHEMA public TO scriptsense;
-ALTER DATABASE scriptsense OWNER TO scriptsense;
-```
+3. **Open the app:**
+   Go to `http://localhost:5173`.
 
-### 4. Set up Python venv and install dependencies
-```bash
-cd backend
-python -m venv venv
+### Option 2: Manual Setup (If you don't use Docker)
 
-# Windows
-venv\Scripts\activate
-# macOS/Linux
-source venv/bin/activate
+1. **Set up the `.env` file:**
+   Copy the `.env.example` file to create a new `.env` file.
+   ```bash
+   cp .env.example .env     # (macOS/Linux)
+   copy .env.example .env   # (Windows)
+   ```
 
-pip install -r requirements.txt
-pip install pymupdf groq google-generativeai
-```
+2. **Install PostgreSQL:**
+   - Download and install PostgreSQL (version 16 or latest) from the [official website](https://www.postgresql.org/download/).
+   - **Important:** During installation, it will ask you to set a password for the default `postgres` superuser. Remember this password!
+   - Leave the default port as `5432`.
 
-### 5. Seed demo data
+3. **Create the Database (using pgAdmin or psql):**
+   - **Via pgAdmin (GUI for Windows/Mac):**
+     1. Open **pgAdmin 4** and log in with your master password.
+     2. Expand **Servers** -> **PostgreSQL**.
+     3. Right-click on **Databases** -> **Create** -> **Database...**
+     4. Set the Database name to `scriptsense` and click **Save**.
+   - **Via psql (Terminal):**
+     ```sql
+     CREATE USER scriptsense WITH PASSWORD 'scriptsense';
+     CREATE DATABASE scriptsense OWNER scriptsense;
+     GRANT ALL ON SCHEMA public TO scriptsense;
+     ALTER DATABASE scriptsense OWNER TO scriptsense;
+     ```
+
+4. **Update your `.env` file:**
+   Open the `.env` file you created and update the `DATABASE_URL` line to match your new database credentials.
+   If using the default `postgres` user from your installation, it should look like:
+   ```env
+   DATABASE_URL=postgresql://postgres:YOUR_PASSWORD_HERE@localhost:5432/scriptsense
+   ```
+   *(Replace `YOUR_PASSWORD_HERE` with the password you set during installation).*
+   
+   Also, don't forget to add your Groq API key:
+   ```env
+   GROQ_API_KEY=gsk_your_actual_api_key_here
+   ```
+
+5. **Set up Python venv and install dependencies:**
+   ```bash
+   cd backend
+   python -m venv venv
+
+   # Windows
+   venv\Scripts\activate
+   # macOS/Linux
+   source venv/bin/activate
+
+   pip install -r requirements.txt
+   ```
+
+6. **Start the backend:**
+   ```bash
+   uvicorn main:app --reload --port 8000
+   ```
+
+7. **Start the frontend:**
+   Open a new terminal:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+8. **Open the app:**
+   Go to `http://localhost:5173`.
+
+### Seeding Demo Data (Optional)
+To test the app, you can seed demo data by running the following script with your Python environment active:
 ```bash
 # Windows
 set PYTHONPATH=backend
@@ -73,27 +117,9 @@ python scripts/seed_db.py
 # macOS/Linux
 PYTHONPATH=backend python scripts/seed_db.py
 ```
+*(If using Docker, run this script inside the backend container or locally if Python is installed).*
 
-### 6. Start the backend
-```bash
-uvicorn main:app --reload --port 8000
-
-# macOS/Linux
-uvicorn main:app --reload --port 8000
-```
-
-### 7. Start the frontend
-Open a new terminal:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### 8. Open the app
-Go to http://localhost:5173
-
-Demo credentials:
+**Demo credentials:**
 - Instructor: `instructor@scriptsense.com` / `password123`
 - TA: `ta@scriptsense.com` / `password123`
 
