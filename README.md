@@ -1,6 +1,6 @@
 # ScriptSense
 
-A Human-in-the-Loop (HITL) exam grading pipeline. Professors upload bulk handwritten exam scans and JSON rubrics. A vision model transcribes the answers, a LangGraph agentic pipeline grades them with partial credit and justifications, and TAs review/approve/override on a high-speed dashboard.
+A Human-in-the-Loop (HITL) exam grading pipeline. Professors upload bulk handwritten exam scans and JSON rubrics. A vision model transcribes the answers, a LangGraph agentic pipeline grades them with partial credit and justifications, and TAs review/approve/override on a high speed dashboard.
 
 ## Stack
 
